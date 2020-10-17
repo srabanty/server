@@ -40,32 +40,32 @@ client.connect(err => {
     const description = req.body.description;
     const filePath = `${__dirname}/services/${file.name}`;
     console.log(title, description, file);
-    file.mv(filePath, err => {
-      if (err) {
-        console.log(err);
-        return res.status(500).send({ msg: 'Failed to upload image' });
-      }
-      const newImg = fs.readFileSync(filePath);
+     //file.mv(filePath, err => {
+    //   if (err) {
+    //     console.log(err);
+    //     return res.status(500).send({ msg: 'Failed to upload image' });
+    //   }
+      const newImg = req.files.file.data;
       const encImg = newImg.toString('base64');
 
       var image = {
-          contentType: req.files.file.mimetype,
-          size: req.files.file.size,
-          img: Buffer(encImg, 'base64')
+          contentType: file.mimetype,
+          size: file.size,
+          img: Buffer.from(encImg, 'base64')
       };
       allServiceCollection.insertOne({ title, description, image })
           .then(result => {
-            fs.remove(filePath, error =>{
-                if(error){
-                console.log(error)
-                return res.status(500).send({ msg: 'Failed to upload image' });
-                }
+            // fs.remove(filePath, error =>{
+            //     if(error){
+            //     console.log(error)
+            //     return res.status(500).send({ msg: 'Failed to upload image' });
+            //     }
                  res.send(result.insertedCount > 0);
             })
             
-          })
+          //})
       // return res.send({ name: file.name, path: `/${file.name}` })
-    })
+    //})
   })
 
   app.get('/services',(req,res)=>{
